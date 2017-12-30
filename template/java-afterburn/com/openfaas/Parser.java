@@ -17,11 +17,17 @@ public class Parser {
             byte[] body = header.readBody(dataStream);
 
             function.Handler handler = new function.Handler();
-            String functionResponse = handler.function(new String(body), header.getMethod());
-            
-            HttpResponse response = new HttpResponse();
-            response.setStatus(200);
+            HttpResponse response = new HttpResponse(); 
             response.setContentType("text/plain");
+	    String functionResponse = "";
+	    try {
+		  functionResponse = handler.function(new String(body), header.getMethod());
+		  response.setStatus(200);
+	     } 
+	    catch (Exception ex) {
+		functionResponse = ex.getMessage();
+		response.setStatus(500);
+	     }
             StringBuffer outBuffer = response.serialize(functionResponse);
 
             out.write(outBuffer.toString(), 0, outBuffer.length());
